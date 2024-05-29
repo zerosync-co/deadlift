@@ -19,3 +19,24 @@ WASM modules are executed such that they can be embedded within any environment 
 ### NATS
 
 NATS messaging is used to execute modules asynchronously with builtin retry mechanisms
+
+## POC
+
+Goal: do series of calculations, where the calculations are the workflow
+
+- actix-web application
+- no auth/users/identity
+- embedded sqlite db
+- synchronous module execution
+- no NATS
+- no docker
+
+routes:
+
+- POST /modules
+- GET /modules
+- POST /modules/{id}/execute
+
+- POST /workflows
+- GET /workflows
+- POST /workflows/{id}/execute
