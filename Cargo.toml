@@ -7,4 +7,7 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4.6.0"
+diesel = { version = "2.1.6", features = ["sqlite", "r2d2", "uuid", "chrono", "serde_json"] }
+diesel_migrations = "2.1.0"
+libsqlite3-sys = { version = "0.28.0", features = ["bundled"] }
 tokio = { version = "1.37.0", features = ["full"] }
