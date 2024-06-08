@@ -3,7 +3,7 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use wasmer_cache::Hash;
 
-#[derive(Serialize, Deserialize, Insertable)]
+#[derive(Serialize, Deserialize, Insertable, Queryable)]
 #[diesel(table_name = modules)]
 pub struct Module {
     hash: String,
@@ -27,11 +27,19 @@ impl Module {
             modules::description.eq(description),
         );
 
-        let conn = &mut db::connection().expect("db conn"); // FIXME--
+        let conn = &mut db::connection()?;
         diesel::insert_into(modules::table)
             .values(values)
             .execute(conn)?;
 
         Ok(hash.to_string())
+    }
+
+    pub fn get_binary_by_hash(hash: &str) -> QueryResult<Vec<u8>> {
+        let conn = &mut db::connection()?;
+        modules::table
+            .find(hash)
+            .select(modules::binary)
+            .first(conn)
     }
 }

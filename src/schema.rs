@@ -8,3 +8,14 @@ diesel::table! {
         description -> Nullable<Text>,
     }
 }
+
+diesel::table! {
+    workflows (id) {
+        id -> Integer,
+        name -> Text,
+        description -> Nullable<Text>,
+        pipeline -> Text,
+    }
+}
+
+diesel::allow_tables_to_appear_in_same_query!(modules, workflows,);
