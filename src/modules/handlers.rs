@@ -39,8 +39,11 @@ pub async fn execute_module_handler(
         _ => return HttpResponse::BadRequest().finish(),
     };
 
-    let mut engine = crate::modules::engine::Engine::new().unwrap(); // FIXME--
-    let output = engine.run(&binary, &input).unwrap(); // FIXME--
-
+    let output = tokio::task::spawn_blocking(move || {
+        let mut engine = crate::modules::engine::Engine::new().unwrap(); // FIXME--
+        engine.run(&binary, &input).unwrap() // FIXME--
+    })
+    .await
+    .unwrap(); // FIXME--
     HttpResponse::Ok().json(output)
 }

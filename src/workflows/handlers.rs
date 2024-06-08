@@ -17,10 +17,7 @@ struct CreateWorkflowParams {
 pub async fn create_workflow_handler(
     web::Json(params): web::Json<CreateWorkflowParams>,
 ) -> impl Responder {
-    let pipeline_str = match serde_json::to_string(&params.pipeline) {
-        Ok(v) => v,
-        Err(e) => return HttpResponse::BadRequest().body(e.to_string()),
-    };
+    let pipeline_str = params.pipeline.join(",");
 
     match web::block(move || Workflow::create(params.name, params.description, pipeline_str)).await
     {
@@ -40,19 +37,20 @@ pub async fn execute_workflow_handler(
         _ => return HttpResponse::BadRequest().finish(),
     };
 
-    let pipeline_iterator = workflow.get_pipeline();
-    let mut engine = crate::modules::engine::Engine::new().unwrap(); // FIXME--
+    let output = tokio::task::spawn_blocking(move || {
+        let pipeline_iterator = workflow.get_pipeline();
+        let mut engine = crate::modules::engine::Engine::new().unwrap(); // FIXME--
 
-    let mut output = Value::default();
-    for hash in pipeline_iterator {
-        let binary = match Module::get_binary_by_hash(hash) {
-            Ok(v) => v,
-            Err(diesel::NotFound) => return HttpResponse::NotFound().finish(),
-            _ => return HttpResponse::BadRequest().finish(),
-        };
+        let mut current_value = input;
+        for hash in pipeline_iterator {
+            let binary = Module::get_binary_by_hash(hash).unwrap(); // FIXME--
+            current_value = engine.run(&binary, &current_value).unwrap(); // FIXME--
+        }
 
-        output = engine.run(&binary, &input).unwrap(); // FIXME--
-    }
+        current_value
+    })
+    .await
+    .unwrap(); // FIXME--
 
     HttpResponse::Ok().json(output)
 }
