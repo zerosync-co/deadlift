@@ -1,15 +1,10 @@
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
-use modules::handlers::*;
-use workflows::handlers::*;
 
-mod modules;
-mod schema;
-mod services;
-mod workflows;
+use deadlift_service::{modules::handlers::*, services::*, workflows::handlers::*};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    services::db::init();
+    db::init();
 
     HttpServer::new(|| {
         App::new().service(status_handler).service(

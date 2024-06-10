@@ -836,8 +836,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "deadlift-wasm"
-version = "0.1.0"
+name = "deadlift"
+version = "0.0.1"
+dependencies = [
+ "deadlift-service",
+ "reqwest 0.12.4",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
+name = "deadlift-service"
+version = "0.0.1"
 dependencies = [
  "actix-multipart",
  "actix-web",
@@ -848,7 +858,6 @@ dependencies = [
  "futures-util",
  "libsqlite3-sys",
  "once_cell",
- "reqwest 0.12.4",
  "rmp-serde",
  "serde",
  "serde_json",
