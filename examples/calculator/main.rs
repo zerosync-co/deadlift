@@ -15,11 +15,7 @@ async fn main() {
     assert_eq!(status_res.status(), 204);
 
     // create add_ten module
-    let add_ten_bytes = std::fs::read(format!(
-        "{}/examples/calculator/add_ten.wasm",
-        env!("CARGO_MANIFEST_DIR")
-    ))
-    .expect("read add_ten bytes");
+    let add_ten_bytes = read_module_bytes("add_ten");
     let add_ten_binary_part = multipart::Part::bytes(add_ten_bytes);
     let add_ten_form = multipart::Form::new()
         .text("title", "add_ten")
@@ -56,11 +52,7 @@ async fn main() {
     );
 
     // create multiply_by_five module
-    let multiply_by_five_bytes = std::fs::read(format!(
-        "{}/examples/calculator/multiply_by_five.wasm",
-        env!("CARGO_MANIFEST_DIR")
-    ))
-    .expect("read multiply_by_five bytes");
+    let multiply_by_five_bytes = read_module_bytes("multiply_by_five");
     let multiply_by_five_binary_part = multipart::Part::bytes(multiply_by_five_bytes);
     let multiply_by_five_form = multipart::Form::new()
         .text("title", "multiply_by_five")
@@ -136,4 +128,11 @@ async fn main() {
             .unwrap_or_default(),
         Value::from(75)
     );
+}
+
+fn read_module_bytes(name: &str) -> Vec<u8> {
+    std::fs::read(format!(
+        "{}/examples/calculator/{}/target/wasm32-wasi/release/{}.wasm",
+        env!("CARGO_MANIFEST_DIR"), name, name
+    )).expect(format!("failed to read {} module bytes; did you build the module with 'cargo build --release --target wasm32-wasi'?", name).as_str())
 }

@@ -4,7 +4,7 @@ use wasmer::{Instance, Memory, MemoryView, Module, Store, Value, ValueType, Wasm
 use wasmer_cache::{Cache, FileSystemCache, Hash};
 use wasmer_wasix::{WasiEnv, WasiFunctionEnv};
 
-// credit https://github.com/knarkzel/cloud/blob/master/src/wasm.rs
+// credit https://github.com/knarkzel/cloud/blob/be553689fe429dbe89c792b4809a60fb51fe6641/src/wasm.rs
 
 pub struct Engine {
     store: wasmer::Store,

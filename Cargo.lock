@@ -839,10 +839,21 @@ dependencies = [
 name = "deadlift"
 version = "0.0.1"
 dependencies = [
+ "deadlift-macro",
  "deadlift-service",
+ "deadlift-util",
  "reqwest 0.12.4",
  "serde_json",
  "tokio",
+]
+
+[[package]]
+name = "deadlift-macro"
+version = "0.0.1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.66",
 ]
 
 [[package]]
@@ -865,6 +876,16 @@ dependencies = [
  "wasmer",
  "wasmer-cache",
  "wasmer-wasix",
+]
+
+[[package]]
+name = "deadlift-util"
+version = "0.0.1"
+dependencies = [
+ "deadlift-macro",
+ "rmp-serde",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

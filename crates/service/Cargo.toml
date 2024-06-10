@@ -1,9 +1,9 @@
 [package]
 name = "deadlift-service"
 description = "High-performance WebAssembly integration service"
-categories = ["wasm"]
-keywords = ["wasm", "webassembly", "integrations"]
-readme = "README.md"
+# categories = ["wasm"]
+# keywords = ["wasm", "webassembly", "integrations"]
+# readme = "README.md"
 authors.workspace = true
 edition.workspace = true
 homepage.workspace = true

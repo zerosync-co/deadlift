@@ -1,0 +1,19 @@
+[package]
+name = "deadlift-util"
+description = "Rust utils for assisting module development"
+# categories = ["wasm"]
+# keywords = ["wasm", "webassembly", "integrations"]
+# readme = "README.md"
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+# license.workspace = true
+# repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+rmp-serde = "1.1"
+deadlift-macro = { workspace = true }
+serde_json = { version = "1.0" }
+serde = { version = "1.0", features = ["derive"] }

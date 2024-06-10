@@ -13,10 +13,14 @@ version.workspace = true
 
 [dependencies]
 deadlift-service = { path = "crates/service" }
+deadlift-macro = { path = "crates/macro" }
+deadlift-util = { path = "crates/util" }
 
 [workspace]
 members = [
   "crates/service",
+  "crates/macro",
+  "crates/util"
 ]
 resolver = "2"
 
@@ -28,6 +32,10 @@ homepage = "https://zerosync.co/"
 # repository = "https://github.com/projectnewone/deadlift"
 rust-version = "1.77"
 version = "0.0.1"
+
+[workspace.dependencies]
+deadlift-macro = { path = "./crates/macro" }
+deadlift-util = { path = "./crates/util" }
 
 [[example]]
 name = "calculator"
