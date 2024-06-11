@@ -31,17 +31,19 @@ pub async fn execute_workflow_handler(
     path: web::Path<i32>,
     web::Json(input): web::Json<Value>,
 ) -> impl Responder {
-    let workflow = match Workflow::find_by_id(path.into_inner()) {
+    let workflow_id = path.into_inner();
+    let workflow = match Workflow::find_by_id(workflow_id) {
         Ok(v) => v,
         Err(diesel::NotFound) => return HttpResponse::NotFound().finish(),
         _ => return HttpResponse::BadRequest().finish(),
     };
 
+    let cloned_input = input.clone();
     let output = tokio::task::spawn_blocking(move || {
         let pipeline_iterator = workflow.get_pipeline();
         let mut engine = crate::modules::engine::Engine::new().unwrap(); // FIXME--
 
-        let mut current_value = input;
+        let mut current_value = cloned_input;
         for hash in pipeline_iterator {
             let binary = Module::get_binary_by_hash(hash).unwrap(); // FIXME--
             current_value = engine.run(&binary, &current_value).unwrap(); // FIXME--
@@ -51,6 +53,8 @@ pub async fn execute_workflow_handler(
     })
     .await
     .unwrap(); // FIXME--
+
+    println!("workflow id: {}; input: {}; output: {}", workflow_id, input, output);
 
     HttpResponse::Ok().json(output)
 }

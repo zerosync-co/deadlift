@@ -31,6 +31,7 @@ async fn main() {
         .text()
         .await
         .expect("add_ten module hash");
+    println!("add_ten module hash: {}", add_ten_module_hash);
 
     // test add_ten module
     let execute_add_ten_module_res = client
@@ -76,6 +77,7 @@ async fn main() {
         .text()
         .await
         .expect("multiply_by_five module hash");
+    println!("multiply_by_five module hash: {}", multiply_by_five_module_hash);
 
     // test multiply_by_five module
     let execute_multiply_by_five_module_res = client
@@ -109,6 +111,7 @@ async fn main() {
         .expect("create workflow res");
     assert_eq!(create_workflow_res.status(), 201);
     let workflow_id = create_workflow_res.text().await.expect("workflow id");
+    println!("calculator workflow id: {}", workflow_id);
 
     // execute workflow
     let execute_workflow_res = client
