@@ -77,7 +77,10 @@ async fn main() {
         .text()
         .await
         .expect("multiply_by_five module hash");
-    println!("multiply_by_five module hash: {}", multiply_by_five_module_hash);
+    println!(
+        "multiply_by_five module hash: {}",
+        multiply_by_five_module_hash
+    );
 
     // test multiply_by_five module
     let execute_multiply_by_five_module_res = client

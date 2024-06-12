@@ -54,7 +54,10 @@ pub async fn execute_workflow_handler(
     .await
     .unwrap(); // FIXME--
 
-    println!("workflow id: {}; input: {}; output: {}", workflow_id, input, output);
+    println!(
+        "workflow id: {}; input: {}; output: {}",
+        workflow_id, input, output
+    );
 
     HttpResponse::Ok().json(output)
 }
