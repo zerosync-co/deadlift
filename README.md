@@ -10,6 +10,47 @@ integrations should be:
 - embeddable -> able to run within existing services (doesn't require new containers)
 - reusable -> able to utilize existing integration modules for new workflows (also enables out of the box solutions)
 
+## Quickstart
+
+Install the [rust toolchain](https://www.rust-lang.org/tools/install)
+
+### Running the web service
+
+`cargo run -p deadlift-service`
+
+### Creating a module
+
+1. Install the wasm32-wasi target
+   `rustup target add wasm32-wasi`
+
+2. Create a rust lib project
+   `cargo new <module name> --lib`
+
+3. Add the following configuration to the project `Cargo.toml`
+
+```
+[lib]
+crate-type = ["cdylib"]
+```
+
+4. Write your module! Examples can be found [here](./examples/calculator/add_ten)
+
+### Run an example
+
+Running the calculator example
+
+1. Run the web service
+
+```
+cargo run -p deadlift-service
+```
+
+2. Run the example
+
+```
+cargo run --example calculator
+```
+
 ## How it works
 
 ### Web Assembly
