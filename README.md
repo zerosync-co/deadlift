@@ -21,10 +21,16 @@ Install the [rust toolchain](https://www.rust-lang.org/tools/install)
 ### Creating a module
 
 1. Install the wasm32-wasi target
-   `rustup target add wasm32-wasi`
+
+```
+rustup target add wasm32-wasi
+```
 
 2. Create a rust lib project
-   `cargo new <module name> --lib`
+
+```
+cargo new <module name> --lib
+```
 
 3. Add the following configuration to the project `Cargo.toml`
 
