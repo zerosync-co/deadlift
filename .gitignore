@@ -1,5 +1,5 @@
 **/target
 .DS_Store
 
-crates/service/database.sqlite
+database.sqlite
 crates/service/cache
