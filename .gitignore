@@ -2,4 +2,5 @@
 .DS_Store
 
 database.sqlite
-crates/service/cache
+cache
+examples/camara-project/create_qod_session/pkg

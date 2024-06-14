@@ -1,0 +1,22 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Camara Project Example</title>
+  </head>
+  <body>
+    <script type="module">
+      import init, { greet } from './pkg/create_qod_session.js'
+
+      async function run() {
+        await init()
+
+        greet('hello world')
+      }
+
+      run()
+    </script>
+
+    Hello world
+  </body>
+</html>
