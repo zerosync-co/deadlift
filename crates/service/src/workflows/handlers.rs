@@ -17,9 +17,8 @@ struct CreateWorkflowParams {
 pub async fn create_workflow_handler(
     web::Json(params): web::Json<CreateWorkflowParams>,
 ) -> impl Responder {
-    let pipeline_str = params.pipeline.join(",");
-
-    match web::block(move || Workflow::create(params.name, params.description, pipeline_str)).await
+    match web::block(move || Workflow::create(params.name, params.description, params.pipeline))
+        .await
     {
         Ok(Ok(id)) => HttpResponse::Created().body(id.to_string()),
         _ => HttpResponse::BadRequest().finish(),
@@ -44,8 +43,8 @@ pub async fn execute_workflow_handler(
         let mut engine = crate::modules::engine::Engine::new().unwrap(); // FIXME--
 
         let mut current_value = cloned_input;
-        for hash in pipeline_iterator {
-            let binary = Module::get_binary_by_hash(hash).unwrap(); // FIXME--
+        for workflow_module in pipeline_iterator {
+            let binary = Module::get_binary_by_hash(workflow_module.get_hash()).unwrap(); // FIXME--
             current_value = engine.run(&binary, &current_value).unwrap(); // FIXME--
         }
 

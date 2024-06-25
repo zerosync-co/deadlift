@@ -5,13 +5,16 @@ use diesel::{
 };
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
+type DbManager = ConnectionManager<SqliteConnection>;
+
+pub type DbConnection = PooledConnection<DbManager>;
+
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
-static POOL: once_cell::sync::Lazy<Pool<ConnectionManager<SqliteConnection>>> =
-    once_cell::sync::Lazy::new(|| {
-        let manager = ConnectionManager::<SqliteConnection>::new("database.sqlite");
-        Pool::<ConnectionManager<SqliteConnection>>::new(manager).expect("db pool")
-    });
+static POOL: once_cell::sync::Lazy<Pool<DbManager>> = once_cell::sync::Lazy::new(|| {
+    let manager = ConnectionManager::<SqliteConnection>::new("database.sqlite");
+    Pool::<DbManager>::new(manager).expect("db pool")
+});
 
 pub fn init() {
     let mut conn = connection().expect("db connection");
@@ -23,8 +26,7 @@ pub fn init() {
         .expect("run pending migrations");
 }
 
-pub fn connection(
-) -> Result<PooledConnection<ConnectionManager<SqliteConnection>>, diesel::result::Error> {
+pub fn connection() -> Result<DbConnection, diesel::result::Error> {
     POOL.get().map_err(|e| {
         diesel::result::Error::DatabaseError(
             diesel::result::DatabaseErrorKind::Unknown,

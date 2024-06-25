@@ -6,6 +6,16 @@ diesel::table! {
         binary -> Binary,
         title -> Text,
         description -> Nullable<Text>,
+        subject -> Text,
+    }
+}
+
+diesel::table! {
+    workflow_modules (id) {
+        id -> Integer,
+        workflow_id -> Integer,
+        module_hash -> Text,
+        parent_workflow_module_id -> Nullable<Integer>,
     }
 }
 
@@ -14,8 +24,10 @@ diesel::table! {
         id -> Integer,
         name -> Text,
         description -> Nullable<Text>,
-        pipeline -> Text,
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(modules, workflows,);
+diesel::joinable!(workflow_modules -> modules (module_hash));
+diesel::joinable!(workflow_modules -> workflows (workflow_id));
+
+diesel::allow_tables_to_appear_in_same_query!(modules, workflow_modules, workflows,);

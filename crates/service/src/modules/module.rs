@@ -8,8 +8,9 @@ use wasmer_cache::Hash;
 pub struct Module {
     hash: String,
     binary: Vec<u8>,
-    title: String,
+    title: String, // REVIEW-- drop this field? it seems unnecessary given the subject field
     description: Option<String>,
+    subject: String,
 }
 
 impl Module {
@@ -17,6 +18,7 @@ impl Module {
         binary: Vec<u8>,
         title: String,
         description: Option<String>,
+        subject: String,
     ) -> QueryResult<String> {
         let hash = Hash::generate(&binary);
 
@@ -25,6 +27,7 @@ impl Module {
             modules::binary.eq(binary),
             modules::title.eq(title),
             modules::description.eq(description),
+            modules::subject.eq(subject),
         );
 
         let conn = &mut db::connection()?;
@@ -40,6 +43,14 @@ impl Module {
         modules::table
             .find(hash)
             .select(modules::binary)
+            .first(conn)
+    }
+
+    pub fn get_hash_by_subject(subject: &str) -> QueryResult<String> {
+        let conn = &mut db::connection()?;
+        modules::table
+            .filter(modules::subject.eq(subject))
+            .select(modules::hash)
             .first(conn)
     }
 }

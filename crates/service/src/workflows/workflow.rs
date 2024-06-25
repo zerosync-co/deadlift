@@ -2,37 +2,63 @@ use crate::{schema::*, services::db};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Queryable, Insertable)]
-#[diesel(table_name = workflows)]
+use super::module::WorkflowModule;
+
+#[derive(Serialize, Deserialize)]
 pub struct Workflow {
     id: i32,
     name: String,
     description: Option<String>,
-    pipeline: String,
+    pipeline: Vec<WorkflowModule>,
+}
+
+#[derive(Serialize, Deserialize, Queryable, Insertable)]
+#[diesel(table_name = workflows)]
+pub struct WorkflowRecord {
+    id: i32,
+    name: String,
+    description: Option<String>,
 }
 
 impl Workflow {
-    pub fn create(name: String, description: Option<String>, pipeline: String) -> QueryResult<i32> {
-        let values = (
-            workflows::name.eq(name),
-            workflows::description.eq(description),
-            workflows::pipeline.eq(pipeline),
-        );
+    pub fn create(
+        name: String,
+        description: Option<String>,
+        pipeline: Vec<String>,
+    ) -> QueryResult<i32> {
+        let connection = &mut db::connection()?;
 
-        let conn = &mut db::connection()?;
-        let created_workflow = diesel::insert_into(workflows::table)
-            .values(values)
-            .get_result::<Self>(conn)?;
+        connection.transaction(|conn| {
+            let workflow_values = (
+                workflows::name.eq(name),
+                workflows::description.eq(description),
+            );
 
-        Ok(created_workflow.id)
+            let created_workflow_record = diesel::insert_into(workflows::table)
+                .values(workflow_values)
+                .get_result::<WorkflowRecord>(conn)?;
+
+            WorkflowModule::create(pipeline, created_workflow_record.id, conn)?;
+
+            Ok(created_workflow_record.id)
+        })
     }
 
     pub fn find_by_id(id: i32) -> QueryResult<Self> {
         let conn = &mut db::connection()?;
-        workflows::table.find(id).first(conn)
+        let workflow_record = workflows::table.find(id).first::<WorkflowRecord>(conn)?;
+
+        let pipeline = WorkflowModule::get_pipeline_from_workflow_id(id)?;
+
+        Ok(Self {
+            id: workflow_record.id,
+            name: workflow_record.name,
+            description: workflow_record.description,
+            pipeline,
+        })
     }
 
-    pub fn get_pipeline(&self) -> impl Iterator<Item = &str> {
-        self.pipeline.split(',')
+    pub fn get_pipeline(&self) -> impl Iterator<Item = &WorkflowModule> {
+        self.pipeline.iter()
     }
 }
