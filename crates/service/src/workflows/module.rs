@@ -6,7 +6,7 @@ use crate::{
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Queryable, Insertable)]
+#[derive(Debug, Serialize, Deserialize, Queryable, Insertable)]
 #[diesel(table_name = workflow_modules)]
 pub struct WorkflowModule {
     id: i32,
