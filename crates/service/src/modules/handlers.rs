@@ -8,6 +8,7 @@ struct CreateModuleParams {
     binary: Bytes,
     title: Text<String>,
     description: Option<Text<String>>,
+    subject: Text<String>,
 }
 
 #[post("/modules")]
@@ -19,6 +20,7 @@ pub async fn create_module_handler(
             form.binary.data.into(),
             form.title.0,
             form.description.map(|v| v.0),
+            form.subject.0,
         )
     })
     .await

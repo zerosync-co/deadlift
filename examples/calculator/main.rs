@@ -19,7 +19,8 @@ async fn main() {
     let add_ten_binary_part = multipart::Part::bytes(add_ten_bytes);
     let add_ten_form = multipart::Form::new()
         .text("title", "add_ten")
-        .part("binary", add_ten_binary_part);
+        .part("binary", add_ten_binary_part)
+        .text("subject", "add-ten");
     let create_add_ten_module_res = client
         .post(format!("{}/api/v1/modules", base_url))
         .multipart(add_ten_form)
@@ -57,7 +58,8 @@ async fn main() {
     let multiply_by_five_binary_part = multipart::Part::bytes(multiply_by_five_bytes);
     let multiply_by_five_form = multipart::Form::new()
         .text("title", "multiply_by_five")
-        .part("binary", multiply_by_five_binary_part);
+        .part("binary", multiply_by_five_binary_part)
+        .text("subject", "multiply-by-five");
     let create_multiply_by_five_module_res = client
         .post(format!("{}/api/v1/modules", base_url))
         .multipart(multiply_by_five_form)
@@ -104,7 +106,7 @@ async fn main() {
     // create workflow
     let create_workflow_params = serde_json::json!({
         "name": "calculator",
-        "pipeline": [add_ten_module_hash, multiply_by_five_module_hash]
+        "pipeline": ["add-ten", "multiply-by-five"]
     });
     let create_workflow_res = client
         .post(format!("{}/api/v1/workflows", base_url))
