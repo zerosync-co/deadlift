@@ -53,4 +53,28 @@ impl Module {
             .select(modules::hash)
             .first(conn)
     }
+
+    pub fn list() -> QueryResult<Vec<serde_json::Value>> {
+        let conn = &mut db::connection()?;
+        let result: Vec<(String, String, Option<String>, String)> = modules::table
+            .select((
+                modules::hash,
+                modules::title,
+                modules::description,
+                modules::subject,
+            ))
+            .load(conn)?;
+
+        Ok(result
+            .into_iter()
+            .map(|(hash, title, description, subject)| {
+                serde_json::json!({
+                    "hash": hash,
+                    "title": title,
+                    "description": description,
+                    "subject": subject
+                })
+            })
+            .collect::<Vec<serde_json::Value>>())
+    }
 }

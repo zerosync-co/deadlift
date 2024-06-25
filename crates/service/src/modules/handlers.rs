@@ -1,5 +1,5 @@
 use actix_multipart::form::{bytes::Bytes, text::Text, MultipartForm};
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{get, post, web, HttpResponse, Responder};
 
 use super::module::Module;
 
@@ -26,6 +26,14 @@ pub async fn create_module_handler(
     .await
     {
         Ok(Ok(hash)) => HttpResponse::Created().body(hash),
+        _ => HttpResponse::BadRequest().finish(),
+    }
+}
+
+#[get("/modules")]
+pub async fn list_modules_handler() -> impl Responder {
+    match web::block(move || Module::list()).await {
+        Ok(Ok(items)) => HttpResponse::Ok().json(items),
         _ => HttpResponse::BadRequest().finish(),
     }
 }
