@@ -34,7 +34,7 @@ pub async fn create_module_handler(
 
 #[get("/modules")]
 pub async fn list_modules_handler() -> impl Responder {
-    match web::block(move || Module::list()).await {
+    match web::block(Module::list).await {
         Ok(Ok(items)) => HttpResponse::Ok().json(items),
         _ => HttpResponse::BadRequest().finish(),
     }

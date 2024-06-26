@@ -74,7 +74,8 @@ async fn main() -> std::io::Result<()> {
                             .build()
                             .unwrap();
 
-                        current_value = plugin.call::<Value, Value>("_main", current_value).unwrap();
+                        current_value =
+                            plugin.call::<Value, Value>("_main", current_value).unwrap();
                     }
 
                     println!("result: {current_value:?}");

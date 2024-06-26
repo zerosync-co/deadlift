@@ -923,21 +923,10 @@ checksum = "e8566979429cf69b49a5c740c60791108e86440e8be149bbea4fe54d2c32d6e2"
 name = "deadlift"
 version = "0.0.1"
 dependencies = [
- "deadlift-macro",
  "deadlift-service",
- "deadlift-util",
  "reqwest",
  "serde_json",
  "tokio",
-]
-
-[[package]]
-name = "deadlift-macro"
-version = "0.0.1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.66",
 ]
 
 [[package]]
@@ -962,16 +951,6 @@ dependencies = [
  "serde_json",
  "sha2",
  "tokio",
-]
-
-[[package]]
-name = "deadlift-util"
-version = "0.0.1"
-dependencies = [
- "deadlift-macro",
- "rmp-serde",
- "serde",
- "serde_json",
 ]
 
 [[package]]
