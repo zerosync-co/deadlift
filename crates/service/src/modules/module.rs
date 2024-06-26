@@ -1,7 +1,7 @@
 use crate::{schema::*, services::db};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
-use wasmer_cache::Hash;
+use sha2::{Digest, Sha256};
 
 #[derive(Serialize, Deserialize, Insertable, Queryable)]
 #[diesel(table_name = modules)]
@@ -20,7 +20,8 @@ impl Module {
         description: Option<String>,
         subject: String,
     ) -> QueryResult<String> {
-        let hash = Hash::generate(&binary);
+        let digest = Sha256::digest(&binary);
+        let hash = hex::encode(digest);
 
         let values = (
             modules::hash.eq(hash.to_string()),

@@ -2,10 +2,12 @@ use std::time::Duration;
 
 use crossbeam_channel::{bounded, select, tick, Receiver};
 use diesel::prelude::*;
+use extism::{Manifest, PluginBuilder, Wasm, WasmMetadata};
 use futures_util::StreamExt;
 
 use deadlift_service::schema::{modules, workflow_modules};
 use deadlift_service::{services::db, workflows::module::WorkflowModule};
+use serde_json::Value;
 
 fn ctrl_channel() -> Result<Receiver<()>, ctrlc::Error> {
     let (sender, receiver) = bounded(0);
@@ -54,16 +56,25 @@ async fn main() -> std::io::Result<()> {
                     let pipeline =
                         WorkflowModule::get_pipeline_from_workflow_id(workflow_id).unwrap();
 
-                    let mut engine = deadlift_service::modules::engine::Engine::new().unwrap(); // FIXME--
-
                     let mut current_value = payload_val.clone();
                     for workflow_module in pipeline.iter().skip(1) {
                         let binary = deadlift_service::modules::module::Module::get_binary_by_hash(
                             workflow_module.get_hash(),
                         )
                         .unwrap(); // FIXME--
-                        current_value = engine.run(&binary, &current_value).unwrap();
-                        // FIXME--
+
+                        let manifest = Manifest::new([Wasm::Data {
+                            data: binary,
+                            meta: WasmMetadata::default(),
+                        }])
+                        .with_allowed_host("TODO");
+
+                        let mut plugin = PluginBuilder::new(manifest)
+                            .with_wasi(true)
+                            .build()
+                            .unwrap();
+
+                        current_value = plugin.call::<Value, Value>("_main", current_value).unwrap();
                     }
 
                     println!("result: {current_value:?}");

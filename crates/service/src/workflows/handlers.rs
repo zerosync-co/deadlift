@@ -1,4 +1,5 @@
 use actix_web::{post, web, HttpResponse, Responder};
+use extism::{Manifest, PluginBuilder, Wasm, WasmMetadata};
 use serde::Deserialize;
 use serde_json::Value;
 
@@ -37,26 +38,29 @@ pub async fn execute_workflow_handler(
         _ => return HttpResponse::BadRequest().finish(),
     };
 
-    let cloned_input = input.clone();
-    let output = tokio::task::spawn_blocking(move || {
-        let pipeline_iterator = workflow.get_pipeline();
-        let mut engine = crate::modules::engine::Engine::new().unwrap(); // FIXME--
+    let pipeline_iterator = workflow.get_pipeline();
 
-        let mut current_value = cloned_input;
-        for workflow_module in pipeline_iterator {
-            let binary = Module::get_binary_by_hash(workflow_module.get_hash()).unwrap(); // FIXME--
-            current_value = engine.run(&binary, &current_value).unwrap(); // FIXME--
-        }
+    let mut current_value = input.clone();
+    for workflow_module in pipeline_iterator {
+        let binary = Module::get_binary_by_hash(workflow_module.get_hash()).unwrap(); // FIXME--
+        let manifest = Manifest::new([Wasm::Data {
+            data: binary,
+            meta: WasmMetadata::default(),
+        }])
+        .with_allowed_host("TODO");
 
-        current_value
-    })
-    .await
-    .unwrap(); // FIXME--
+        let mut plugin = PluginBuilder::new(manifest)
+            .with_wasi(true)
+            .build()
+            .unwrap();
+
+        current_value = plugin.call::<Value, Value>("_main", current_value).unwrap();
+    }
 
     println!(
         "workflow id: {}; input: {}; output: {}",
-        workflow_id, input, output
+        workflow_id, input, current_value
     );
 
-    HttpResponse::Ok().json(output)
+    HttpResponse::Ok().json(current_value)
 }

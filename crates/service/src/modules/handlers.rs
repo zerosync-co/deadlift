@@ -1,5 +1,7 @@
 use actix_multipart::form::{bytes::Bytes, text::Text, MultipartForm};
 use actix_web::{get, post, web, HttpResponse, Responder};
+use extism::{Manifest, PluginBuilder, Wasm, WasmMetadata};
+use serde_json::Value;
 
 use super::module::Module;
 
@@ -49,11 +51,17 @@ pub async fn execute_module_handler(
         _ => return HttpResponse::BadRequest().finish(),
     };
 
-    let output = tokio::task::spawn_blocking(move || {
-        let mut engine = crate::modules::engine::Engine::new().unwrap(); // FIXME--
-        engine.run(&binary, &input).unwrap() // FIXME--
-    })
-    .await
-    .unwrap(); // FIXME--
+    let manifest = Manifest::new([Wasm::Data {
+        data: binary,
+        meta: WasmMetadata::default(),
+    }])
+    .with_allowed_host("TODO");
+
+    let mut plugin = PluginBuilder::new(manifest)
+        .with_wasi(true)
+        .build()
+        .unwrap();
+
+    let output = plugin.call::<Value, Value>("_main", input).unwrap();
     HttpResponse::Ok().json(output)
 }
