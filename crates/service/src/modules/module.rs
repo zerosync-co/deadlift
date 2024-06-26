@@ -8,7 +8,7 @@ use wasmer_cache::Hash;
 pub struct Module {
     hash: String,
     binary: Vec<u8>,
-    title: String, // REVIEW-- drop this field? it seems unnecessary given the subject field
+    title: String, // REVIEW-- drop this field? it seems unnecessary given the subject field-- change to name and change subject to type; add (name, type) unique constraint
     description: Option<String>,
     subject: String,
 }
