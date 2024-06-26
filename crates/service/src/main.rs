@@ -29,6 +29,8 @@ fn cors_middleware() -> Cors {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+    dotenv::dotenv().ok();
+
     db::init(); // TODO-- db functions should be async so that you don't have to wrap them with web::block all the time
 
     HttpServer::new(|| {

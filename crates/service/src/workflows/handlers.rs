@@ -1,9 +1,8 @@
 use actix_web::{post, web, HttpResponse, Responder};
-use extism::{Manifest, PluginBuilder, Wasm, WasmMetadata};
 use serde::Deserialize;
 use serde_json::Value;
 
-use crate::modules::module::Module;
+use crate::modules::{engine::get_plugin_from_data, module::Module};
 
 use super::workflow::Workflow;
 
@@ -43,16 +42,8 @@ pub async fn execute_workflow_handler(
     let mut current_value = input.clone();
     for workflow_module in pipeline_iterator {
         let binary = Module::get_binary_by_hash(workflow_module.get_hash()).unwrap(); // FIXME--
-        let manifest = Manifest::new([Wasm::Data {
-            data: binary,
-            meta: WasmMetadata::default(),
-        }])
-        .with_allowed_host("TODO");
 
-        let mut plugin = PluginBuilder::new(manifest)
-            .with_wasi(true)
-            .build()
-            .unwrap();
+        let mut plugin = get_plugin_from_data(binary);
 
         current_value = plugin.call::<Value, Value>("_main", current_value).unwrap();
     }

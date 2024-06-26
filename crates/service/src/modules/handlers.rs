@@ -1,9 +1,10 @@
 use actix_multipart::form::{bytes::Bytes, text::Text, MultipartForm};
 use actix_web::{get, post, web, HttpResponse, Responder};
-use extism::{Manifest, PluginBuilder, Wasm, WasmMetadata};
 use serde_json::Value;
 
 use super::module::Module;
+
+use crate::modules::engine::get_plugin_from_data;
 
 #[derive(MultipartForm)]
 struct CreateModuleParams {
@@ -51,16 +52,7 @@ pub async fn execute_module_handler(
         _ => return HttpResponse::BadRequest().finish(),
     };
 
-    let manifest = Manifest::new([Wasm::Data {
-        data: binary,
-        meta: WasmMetadata::default(),
-    }])
-    .with_allowed_host("TODO");
-
-    let mut plugin = PluginBuilder::new(manifest)
-        .with_wasi(true)
-        .build()
-        .unwrap();
+    let mut plugin = get_plugin_from_data(binary);
 
     let output = plugin.call::<Value, Value>("_main", input).unwrap();
     HttpResponse::Ok().json(output)

@@ -2,11 +2,12 @@ use std::time::Duration;
 
 use crossbeam_channel::{bounded, select, tick, Receiver};
 use diesel::prelude::*;
-use extism::{Manifest, PluginBuilder, Wasm, WasmMetadata};
 use futures_util::StreamExt;
 
 use deadlift_service::schema::{modules, workflow_modules};
-use deadlift_service::{services::db, workflows::module::WorkflowModule};
+use deadlift_service::{
+    modules::engine::get_plugin_from_data, services::db, workflows::module::WorkflowModule,
+};
 use serde_json::Value;
 
 fn ctrl_channel() -> Result<Receiver<()>, ctrlc::Error> {
@@ -63,16 +64,7 @@ async fn main() -> std::io::Result<()> {
                         )
                         .unwrap(); // FIXME--
 
-                        let manifest = Manifest::new([Wasm::Data {
-                            data: binary,
-                            meta: WasmMetadata::default(),
-                        }])
-                        .with_allowed_host("TODO");
-
-                        let mut plugin = PluginBuilder::new(manifest)
-                            .with_wasi(true)
-                            .build()
-                            .unwrap();
+                        let mut plugin = get_plugin_from_data(binary);
 
                         current_value =
                             plugin.call::<Value, Value>("_main", current_value).unwrap();
