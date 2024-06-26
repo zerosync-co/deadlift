@@ -1,0 +1,31 @@
+{
+	"name": "realworld.svelte.dev",
+	"version": "1.0.1-next.0",
+	"private": true,
+	"license": "MIT",
+	"type": "module",
+	"scripts": {
+		"dev": "wasm-pack build wasm-fetch && vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"lint": "prettier --check .",
+		"format": "prettier --write .",
+		"start:nats": "nats-server -DVV"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-vercel": "^4.0.3",
+		"@sveltejs/kit": "^2.4.3",
+		"@sveltejs/vite-plugin-svelte": "^3.0.1",
+		"marked": "^11.1.0",
+		"prettier": "^3.1.1",
+		"prettier-plugin-svelte": "^3.1.2",
+		"sanitize-html": "^2.13.0",
+		"svelte": "^4.2.8",
+		"typescript": "^5.3.3",
+		"vite": "^5.0.13",
+		"vite-plugin-wasm": "^3.3.0"
+	},
+	"dependencies": {
+		"nats": "^2.27.0"
+	}
+}
