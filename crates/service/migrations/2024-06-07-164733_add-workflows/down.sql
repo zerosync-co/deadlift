@@ -1,1 +1,1 @@
-DROP TABLE workflows;
+DROP TABLE IF EXISTS workflows;

@@ -1,4 +1,4 @@
-CREATE TABLE workflow_modules (
+CREATE TABLE IF NOT EXISTS workflow_modules (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     workflow_id INTEGER NOT NULL,
     module_hash TEXT NOT NULL,

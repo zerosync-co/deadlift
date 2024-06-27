@@ -1,4 +1,4 @@
-CREATE TABLE modules (
+CREATE TABLE IF NOT EXISTS modules (
     hash TEXT PRIMARY KEY NOT NULL,
     binary BLOB NOT NULL,
     title TEXT NOT NULL,
