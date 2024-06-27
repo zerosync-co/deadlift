@@ -10,7 +10,8 @@
 		"preview": "vite preview",
 		"lint": "prettier --check .",
 		"format": "prettier --write .",
-		"start:nats": "nats-server -DVV"
+		"start:nats": "nats-server -DVV",
+		"seed": "node seed-deadlift-db.cjs"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-vercel": "^4.0.3",
@@ -20,6 +21,7 @@
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
 		"sanitize-html": "^2.13.0",
+		"sqlite3": "^5.1.7",
 		"svelte": "^4.2.8",
 		"typescript": "^5.3.3",
 		"vite": "^5.0.13",
