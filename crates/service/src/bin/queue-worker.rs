@@ -21,6 +21,8 @@ fn ctrl_channel() -> Result<Receiver<()>, ctrlc::Error> {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+    dotenv::dotenv().ok();
+
     db::init();
 
     tokio::spawn(async move {
