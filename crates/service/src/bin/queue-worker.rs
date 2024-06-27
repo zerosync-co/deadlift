@@ -48,6 +48,11 @@ async fn main() -> std::io::Result<()> {
                 .load(conn)
                 .unwrap();
 
+            if res.is_empty() {
+                println!("failed to resolve workflow(s)");
+                continue;
+            }
+
             let payload_val =
                 serde_json::from_slice::<serde_json::Value>(&message.payload).unwrap();
             tokio::task::spawn_blocking(move || {
@@ -59,6 +64,11 @@ async fn main() -> std::io::Result<()> {
 
                     let mut current_value = payload_val.clone();
                     for workflow_module in pipeline.iter().skip(1) {
+                        if current_value == Value::default() {
+                            println!("payload is null; stopping execution");
+                            break;
+                        }
+
                         let binary = deadlift_service::modules::module::Module::get_binary_by_hash(
                             workflow_module.get_hash(),
                         )
