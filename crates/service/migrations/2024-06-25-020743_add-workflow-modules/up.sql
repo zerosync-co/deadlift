@@ -3,6 +3,6 @@ CREATE TABLE workflow_modules (
     workflow_id INTEGER NOT NULL,
     module_hash TEXT NOT NULL,
     parent_workflow_module_id INTEGER,
-    FOREIGN KEY (workflow_id) REFERENCES workflows(id),
+    FOREIGN KEY (workflow_id) REFERENCES workflows(id) ON DELETE CASCADE,
     FOREIGN KEY (module_hash) REFERENCES modules(hash)
 );
