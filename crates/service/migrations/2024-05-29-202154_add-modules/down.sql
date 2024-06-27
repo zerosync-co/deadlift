@@ -1,1 +1,1 @@
-DROP TABLE modules;
+DROP TABLE IF EXISTS modules;

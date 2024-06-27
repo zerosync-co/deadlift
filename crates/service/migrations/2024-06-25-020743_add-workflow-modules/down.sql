@@ -1,1 +1,1 @@
-DROP TABLE workflow_modules;
+DROP TABLE IF EXISTS workflow_modules;

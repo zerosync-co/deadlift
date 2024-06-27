@@ -1,4 +1,4 @@
-CREATE TABLE workflows (
+CREATE TABLE IF NOT EXISTS workflows (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     name TEXT NOT NULL,
     description TEXT

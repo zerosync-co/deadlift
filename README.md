@@ -20,10 +20,10 @@ Install the [rust toolchain](https://www.rust-lang.org/tools/install)
 
 ### Creating a module
 
-1. Install the wasm32-wasi target
+1. Install the wasm32-unknown-unknown target
 
 ```
-rustup target add wasm32-wasi
+rustup target add wasm32-unknown-unknown
 ```
 
 2. Create a rust lib project

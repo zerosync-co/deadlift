@@ -5,7 +5,10 @@ use diesel::prelude::*;
 use futures_util::StreamExt;
 
 use deadlift_service::schema::{modules, workflow_modules};
-use deadlift_service::{services::db, workflows::module::WorkflowModule};
+use deadlift_service::{
+    modules::engine::get_plugin_from_data, services::db, workflows::module::WorkflowModule,
+};
+use serde_json::Value;
 
 fn ctrl_channel() -> Result<Receiver<()>, ctrlc::Error> {
     let (sender, receiver) = bounded(0);
@@ -18,6 +21,8 @@ fn ctrl_channel() -> Result<Receiver<()>, ctrlc::Error> {
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+    dotenv::dotenv().ok();
+
     db::init();
 
     tokio::spawn(async move {
@@ -45,6 +50,11 @@ async fn main() -> std::io::Result<()> {
                 .load(conn)
                 .unwrap();
 
+            if res.is_empty() {
+                println!("failed to resolve workflow(s)");
+                continue;
+            }
+
             let payload_val =
                 serde_json::from_slice::<serde_json::Value>(&message.payload).unwrap();
             tokio::task::spawn_blocking(move || {
@@ -54,16 +64,22 @@ async fn main() -> std::io::Result<()> {
                     let pipeline =
                         WorkflowModule::get_pipeline_from_workflow_id(workflow_id).unwrap();
 
-                    let mut engine = deadlift_service::modules::engine::Engine::new().unwrap(); // FIXME--
-
                     let mut current_value = payload_val.clone();
                     for workflow_module in pipeline.iter().skip(1) {
+                        if current_value == Value::default() {
+                            println!("payload is null; stopping execution");
+                            break;
+                        }
+
                         let binary = deadlift_service::modules::module::Module::get_binary_by_hash(
                             workflow_module.get_hash(),
                         )
                         .unwrap(); // FIXME--
-                        current_value = engine.run(&binary, &current_value).unwrap();
-                        // FIXME--
+
+                        let mut plugin = get_plugin_from_data(binary);
+
+                        current_value =
+                            plugin.call::<Value, Value>("_main", current_value).unwrap();
                     }
 
                     println!("result: {current_value:?}");

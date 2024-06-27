@@ -1,7 +1,10 @@
 use actix_multipart::form::{bytes::Bytes, text::Text, MultipartForm};
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{get, post, web, HttpResponse, Responder};
+use serde_json::Value;
 
 use super::module::Module;
+
+use crate::modules::engine::get_plugin_from_data;
 
 #[derive(MultipartForm)]
 struct CreateModuleParams {
@@ -30,6 +33,14 @@ pub async fn create_module_handler(
     }
 }
 
+#[get("/modules")]
+pub async fn list_modules_handler() -> impl Responder {
+    match web::block(Module::list).await {
+        Ok(Ok(items)) => HttpResponse::Ok().json(items),
+        _ => HttpResponse::BadRequest().finish(),
+    }
+}
+
 #[post("/modules/{module_hash}/execute")]
 pub async fn execute_module_handler(
     path: web::Path<String>,
@@ -41,11 +52,8 @@ pub async fn execute_module_handler(
         _ => return HttpResponse::BadRequest().finish(),
     };
 
-    let output = tokio::task::spawn_blocking(move || {
-        let mut engine = crate::modules::engine::Engine::new().unwrap(); // FIXME--
-        engine.run(&binary, &input).unwrap() // FIXME--
-    })
-    .await
-    .unwrap(); // FIXME--
+    let mut plugin = get_plugin_from_data(binary);
+
+    let output = plugin.call::<Value, Value>("_main", input).unwrap();
     HttpResponse::Ok().json(output)
 }

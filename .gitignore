@@ -3,3 +3,5 @@
 
 **/database.sqlite
 **/cache
+
+.env

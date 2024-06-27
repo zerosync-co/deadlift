@@ -140,7 +140,7 @@ async fn main() {
 
 fn read_module_bytes(name: &str) -> Vec<u8> {
     std::fs::read(format!(
-        "{}/examples/calculator/{}/target/wasm32-wasi/release/{}.wasm",
+        "{}/examples/calculator/{}/target/wasm32-unknown-unknown/release/{}.wasm",
         env!("CARGO_MANIFEST_DIR"), name, name
-    )).expect(format!("failed to read {} module bytes; did you build the module with 'cargo build --release --target wasm32-wasi'?", name).as_str())
+    )).expect(format!("failed to read {} module bytes; did you build the module with 'cargo build --release --target wasm32-unknown-unknown'?", name).as_str())
 }
