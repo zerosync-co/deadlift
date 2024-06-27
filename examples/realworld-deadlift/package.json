@@ -5,7 +5,7 @@
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
-		"dev": "wasm-pack build wasm-fetch && vite dev",
+		"dev": "wasm-pack build wasm-fetch --release && vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"lint": "prettier --check .",

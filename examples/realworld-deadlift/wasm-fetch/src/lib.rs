@@ -98,7 +98,7 @@ pub async fn wasm_fetch(url: String, opts: JsValue) -> Result<Response, JsValue>
         });
 
         if let Err(e) = publish_to_nats(
-            "deadlift.modules.ingest.fetch-realworld",
+            "deadlift.modules.ingest.realworld-fetch",
             deadlift_output.to_string().as_str(),
         )
         .await
